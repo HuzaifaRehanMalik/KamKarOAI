@@ -24,7 +24,7 @@ npx prisma migrate dev      # create tables
 npm run dev                 # http://localhost:3000
 ```
 
-1. Database: either run `docker compose up -d` for a local Postgres (the default `DATABASE_URL` in `.env.example` already points to it), or create a free database at [neon.tech](https://neon.tech) and paste its connection string into `DATABASE_URL`.
+1. Create a free Postgres database at [neon.tech](https://neon.tech) and paste its connection string into `DATABASE_URL`.
 2. Generate `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY` with the commands in `.env.example`.
 3. (Optional) Add a [Resend](https://resend.com) API key so emails actually send. Without it, reset and verification links are printed to the server console.
 4. Sign up with `rehanhuzaifa035@gmail.com` and click the verification link. The **Admin** link then appears in the nav.
