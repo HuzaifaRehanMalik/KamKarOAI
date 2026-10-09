@@ -14,7 +14,7 @@ export default async function RunsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Run history</h1>
+      <h1 className="font-display text-3xl font-semibold tracking-[-0.025em]">Run history</h1>
       {runs.length === 0 ? (
         <p className="card text-muted">No runs yet.</p>
       ) : (

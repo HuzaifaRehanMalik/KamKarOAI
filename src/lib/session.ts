@@ -20,7 +20,7 @@ export async function requireUser() {
 }
 
 /**
- * Admin gate. Always checked on the server — never rely on hiding UI.
+ * Admin gate. Always checked on the server. Never rely on hiding UI.
  * Requires a verified email so nobody can claim admin by signing up with the
  * admin address before its real owner does.
  */

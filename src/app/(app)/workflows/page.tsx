@@ -14,7 +14,7 @@ export default async function WorkflowsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Workflows</h1>
+        <h1 className="font-display text-3xl font-semibold tracking-[-0.025em]">Workflows</h1>
         <form action={createWorkflow}>
           <button className="btn-primary">New workflow</button>
         </form>

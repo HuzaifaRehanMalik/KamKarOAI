@@ -6,7 +6,7 @@ import { runPrompt } from "./ai/providers";
 /** Decrypts a key owned by userId. The plaintext only lives in memory for this request. */
 export async function loadUserKey(userId: string, apiKeyId: string) {
   const key = await prisma.apiKey.findFirst({ where: { id: apiKeyId, userId } });
-  if (!key) throw new Error("API key not found — re-select it in the node settings");
+  if (!key) throw new Error("API key not found. Re-select it in the node settings");
   return { provider: key.provider, secret: decryptSecret(key) };
 }
 

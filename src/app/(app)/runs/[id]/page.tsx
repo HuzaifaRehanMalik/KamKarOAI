@@ -19,7 +19,7 @@ export default async function RunPage({ params }: { params: Promise<{ id: string
     <div className="space-y-6">
       <div>
         <Link href={`/workflows/${run.workflow.id}`} className="text-sm text-muted hover:text-foreground">← {run.workflow.name}</Link>
-        <h1 className="mt-1 flex items-center gap-3 text-2xl font-semibold">Run <StatusBadge status={run.status} /></h1>
+        <h1 className="mt-1 flex items-center gap-3 font-display text-3xl font-semibold tracking-[-0.025em]">Run <StatusBadge status={run.status} /></h1>
         <p className="text-sm text-muted">{run.startedAt.toLocaleString()} · {run.tokens} tokens</p>
       </div>
       {run.error && <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{run.error}</p>}

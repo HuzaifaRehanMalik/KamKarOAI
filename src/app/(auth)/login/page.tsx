@@ -30,7 +30,7 @@ function LoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <h1 className="text-xl font-semibold">Log in</h1>
+      <h1 className="mb-2 font-display text-3xl font-semibold tracking-[-0.02em]">Log in</h1>
       <FormMessage error={error} />
       <div>
         <label className="label" htmlFor="email">Email</label>

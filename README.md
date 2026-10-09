@@ -13,7 +13,7 @@ An AI automation platform where users **bring their own API key** (OpenAI, Anthr
 
 ## Stack
 
-Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Prisma + PostgreSQL (Neon) · Better Auth · Vercel AI SDK · React Flow · Resend · Zod
+Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Prisma + PostgreSQL (Neon) · Better Auth · Vercel AI SDK · React Flow · Inngest · Resend · Zod
 
 ## Getting started
 
@@ -22,6 +22,7 @@ npm install
 cp .env.example .env        # fill in the values (see comments in the file)
 npx prisma migrate dev      # create tables
 npm run dev                 # http://localhost:3000
+npm run dev:inngest         # in a second terminal: runs workflows in the background
 ```
 
 1. Create a free Postgres database at [neon.tech](https://neon.tech) and paste its connection string into `DATABASE_URL`.
@@ -42,7 +43,7 @@ npm run dev                 # http://localhost:3000
 ## Deploying to Vercel
 
 1. Import the repo in Vercel.
-2. Add every variable from `.env.example`, and set `BETTER_AUTH_URL` to your production URL.
+2. Add every variable from `.env.example` (plus `INNGEST_EVENT_KEY` and `INNGEST_SIGNING_KEY`, without `INNGEST_DEV`), and set `BETTER_AUTH_URL` to your production URL.
 3. Set the build command to `prisma migrate deploy && next build`. The project runs `prisma generate` automatically on `postinstall`.
 
 ## Project layout
@@ -53,7 +54,7 @@ src/
   app/(app)/         dashboard, workflows, runs, playground, settings
   app/admin/         admin panel (server-side gated)
   app/actions/       server actions (keys, workflows, admin)
-  app/api/           Better Auth handler, workflow run endpoint
+  app/api/           Better Auth, Inngest, workflow run + status endpoints
   lib/auth.ts        Better Auth config
   lib/crypto.ts      API-key encryption
   lib/ai/            provider factory + model lists

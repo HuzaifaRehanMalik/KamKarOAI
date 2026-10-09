@@ -1,47 +1,128 @@
 @import "tailwindcss";
 
+/*
+ * KamKarOAI: "Signal" design system.
+ * Dark-first instrument panel: near-black field, hairline borders, one phosphor-green accent.
+ */
 :root {
-  --background: #fafafa;
-  --foreground: #18181b;
-  --card: #ffffff;
-  --muted: #71717a;
-  --border: #e4e4e7;
-  --primary: #4f46e5;
-  --primary-foreground: #ffffff;
-  --danger: #dc2626;
-  --success: #16a34a;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #09090b;
-    --foreground: #fafafa;
-    --card: #18181b;
-    --muted: #a1a1aa;
-    --border: #27272a;
-    --primary: #6366f1;
-    --danger: #f87171;
-    --success: #4ade80;
-  }
+  color-scheme: dark;
+  --background: #07080a;
+  --foreground: #eef0f2;
+  --card: #0d0f12;
+  --elevated: #13161a;
+  --muted: #8a9099;
+  --border: #1f242b;
+  --border-strong: #2d343d;
+  --primary: #39ff5a;
+  --primary-foreground: #03140a;
+  --accent: #5ee6ff;
+  --danger: #ff5c6c;
+  --success: #3dffa8;
+  --warning: #ffb547;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
+  --color-elevated: var(--elevated);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
   --color-danger: var(--danger);
   --color-success: var(--success);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-warning: var(--warning);
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display-face), var(--font-body), ui-sans-serif, sans-serif;
+  --font-mono: var(--font-mono-face), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+html {
+  background: var(--background);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  min-height: 100vh;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--primary) 35%, transparent);
+  color: var(--foreground);
+}
+
+/* Faint technical grid that fades toward the edges. */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--border) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--border) 70%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);
+}
+
+/* Soft ambient light behind hero content. */
+.glow {
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--primary) 18%, transparent), transparent);
+  filter: blur(40px);
+}
+
+/* HUD corner brackets, used sparingly on focal panels. */
+.brackets {
+  position: relative;
+}
+.brackets::before,
+.brackets::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--primary);
+  pointer-events: none;
+}
+.brackets::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+.brackets::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+}
+
+/* Signal pulse travelling along workflow edges on the landing page. */
+@keyframes signal {
+  from { stroke-dashoffset: 120; }
+  to { stroke-dashoffset: 0; }
+}
+.signal-path {
+  stroke-dasharray: 8 112;
+  animation: signal 2.4s linear infinite;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.rise {
+  animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes blink {
+  50% { opacity: 0.25; }
+}
+.blink {
+  animation: blink 1.6s steps(2) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-path, .rise, .blink { animation: none; }
 }
 
 /* Our workflow nodes render their own card; drop React Flow's built-in node chrome. */
@@ -53,25 +134,39 @@ body {
   width: auto;
   box-shadow: none;
 }
+.react-flow {
+  --xy-background-color: var(--card);
+  --xy-edge-stroke: var(--border-strong);
+  --xy-edge-stroke-selected: var(--primary);
+  --xy-controls-button-background-color: var(--elevated);
+  --xy-controls-button-background-color-hover: var(--border);
+  --xy-controls-button-color: var(--foreground);
+  --xy-controls-button-border-color: var(--border);
+  --xy-handle-background-color: var(--primary);
+  --xy-handle-border-color: var(--background);
+}
 
 @utility input {
-  @apply w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40;
+  @apply w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted/60 hover:border-border-strong focus:border-primary/60 focus:ring-2 focus:ring-primary/15;
 }
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition duration-200 disabled:pointer-events-none disabled:opacity-50;
 }
 @utility btn-primary {
-  @apply btn bg-primary text-primary-foreground hover:opacity-90;
+  @apply btn bg-primary text-primary-foreground shadow-[0_0_0_1px_rgba(57,255,90,0.4),0_8px_30px_-8px_rgba(57,255,90,0.45)] hover:-translate-y-px hover:shadow-[0_0_0_1px_rgba(57,255,90,0.6),0_12px_40px_-8px_rgba(57,255,90,0.6)] active:translate-y-0;
 }
 @utility btn-outline {
-  @apply btn border border-border bg-card hover:bg-background;
+  @apply btn border border-border-strong bg-transparent text-foreground hover:border-foreground/40 hover:bg-elevated;
 }
 @utility btn-danger {
   @apply btn border border-danger/40 text-danger hover:bg-danger/10;
 }
 @utility card {
-  @apply rounded-xl border border-border bg-card p-6;
+  @apply rounded-lg border border-border bg-card p-6 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)];
 }
 @utility label {
-  @apply mb-1 block text-sm font-medium;
+  @apply mb-1.5 block font-mono text-[11px] uppercase tracking-[0.12em] text-muted;
+}
+@utility eyebrow {
+  @apply font-mono text-xs uppercase tracking-[0.18em] text-primary;
 }

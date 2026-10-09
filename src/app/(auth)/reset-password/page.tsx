@@ -29,7 +29,7 @@ function ResetForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <h1 className="text-xl font-semibold">Set a new password</h1>
+      <h1 className="mb-2 font-display text-3xl font-semibold tracking-[-0.02em]">Set a new password</h1>
       <FormMessage error={error} />
       <div>
         <label className="label" htmlFor="password">New password</label>

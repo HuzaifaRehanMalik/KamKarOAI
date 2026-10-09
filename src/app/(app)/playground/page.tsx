@@ -14,7 +14,7 @@ export default async function PlaygroundPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Playground</h1>
+        <h1 className="font-display text-3xl font-semibold tracking-[-0.025em]">Playground</h1>
         <p className="text-muted">Send a single prompt to any model with one of your keys.</p>
       </div>
       {keys.length === 0 ? (

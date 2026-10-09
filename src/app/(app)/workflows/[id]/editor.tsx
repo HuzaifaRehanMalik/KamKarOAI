@@ -5,49 +5,19 @@ import {
   addEdge,
   Background,
   Controls,
-  Handle,
-  Position,
   ReactFlow,
   useEdgesState,
   useNodesState,
   type Connection,
   type Edge,
-  type Node,
-  type NodeProps,
 } from "@xyflow/react";
 import Link from "next/link";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { deleteWorkflow, saveWorkflow } from "@/app/actions/workflows";
 import { ModelPicker, type KeyOption } from "@/components/model-picker";
 import { FormMessage } from "@/components/form-message";
+import { NODE_META, nodeTypes, type FlowNode } from "@/components/flow-card";
 import { TRANSFORM_OPS, type NodeResult, type NodeType, type WorkflowGraph } from "@/lib/workflow/types";
-
-type FlowNode = Node<Record<string, unknown>, NodeType>;
-
-const NODE_META: Record<NodeType, { title: string; color: string; hint: string }> = {
-  input: { title: "Input", color: "#0ea5e9", hint: "Text you provide when running" },
-  ai: { title: "AI Prompt", color: "#6366f1", hint: "Calls a model with your key" },
-  transform: { title: "Transform", color: "#f59e0b", hint: "Reshape text without AI" },
-  output: { title: "Output", color: "#16a34a", hint: "Final result of the run" },
-};
-
-function FlowCard({ type, data, selected }: NodeProps<FlowNode>) {
-  const meta = NODE_META[type as NodeType];
-  return (
-    <div
-      className="min-w-44 rounded-lg border bg-card px-3 py-2 text-left shadow-sm"
-      style={{ borderColor: selected ? meta.color : "var(--border)", borderLeft: `4px solid ${meta.color}` }}
-    >
-      {type !== "input" && <Handle type="target" position={Position.Top} />}
-      <div className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: meta.color }}>{meta.title}</div>
-      <div className="text-sm font-medium">{String(data.label ?? meta.title)}</div>
-      {type === "ai" && <div className="text-xs text-muted">{String(data.model || "no model")}</div>}
-      {type !== "output" && <Handle type="source" position={Position.Bottom} />}
-    </div>
-  );
-}
-
-const nodeTypes = { input: FlowCard, ai: FlowCard, transform: FlowCard, output: FlowCard };
 
 const DEFAULT_DATA: Record<NodeType, Record<string, unknown>> = {
   input: { label: "Input" },
@@ -132,8 +102,23 @@ export function WorkflowEditor({
         body: JSON.stringify({ input: runInput }),
       });
       const json = await res.json();
-      if (!res.ok) setStatus({ error: json.error ?? "Run failed" });
-      else setRun(json.run);
+      if (!res.ok) {
+        setStatus({ error: json.run?.error ?? json.error ?? "Run failed" });
+        return;
+      }
+      // Runs execute in the background; poll until they finish.
+      let current: Run = json.run;
+      const deadline = Date.now() + 10 * 60_000;
+      while (current.status === "running") {
+        if (Date.now() > deadline) {
+          setStatus({ error: "Still running. Check the Runs page for the result" });
+          return;
+        }
+        await new Promise((r) => setTimeout(r, 1500));
+        const poll = await fetch(`/api/runs/${current.id}`);
+        if (poll.ok) current = (await poll.json()).run;
+      }
+      setRun(current);
     } catch {
       setStatus({ error: "Network error while running" });
     } finally {
@@ -164,7 +149,7 @@ export function WorkflowEditor({
       <FormMessage error={status.error} success={status.success} />
       {keys.length === 0 && (
         <p className="text-sm text-danger">
-          You have no API keys yet — <Link href="/settings" className="underline">add one</Link> before running AI steps.
+          You have no API keys yet. <Link href="/settings" className="underline">Add one</Link> before running AI steps.
         </p>
       )}
 
@@ -177,8 +162,9 @@ export function WorkflowEditor({
               </button>
             ))}
           </div>
-          <div className="h-[520px] rounded-xl border border-border bg-card">
+          <div className="brackets h-[560px] overflow-hidden rounded-lg border border-border bg-card">
             <ReactFlow
+              colorMode="dark"
               nodes={nodes}
               edges={edges}
               nodeTypes={nodeTypes}
@@ -189,7 +175,7 @@ export function WorkflowEditor({
               onPaneClick={() => setSelectedId(null)}
               fitView
             >
-              <Background />
+              <Background color="#2d343d" gap={20} />
               <Controls />
             </ReactFlow>
           </div>

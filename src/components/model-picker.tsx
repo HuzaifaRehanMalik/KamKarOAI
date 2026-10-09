@@ -33,7 +33,7 @@ export function ModelPicker({
         >
           <option value="">Select a key…</option>
           {keys.map((k) => (
-            <option key={k.id} value={k.id}>{PROVIDER_LABELS[k.provider]} — {k.label}</option>
+            <option key={k.id} value={k.id}>{PROVIDER_LABELS[k.provider]}: {k.label}</option>
           ))}
         </select>
       </div>

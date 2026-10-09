@@ -26,7 +26,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <h1 className="text-xl font-semibold">Forgot password</h1>
+      <h1 className="mb-2 font-display text-3xl font-semibold tracking-[-0.02em]">Forgot password</h1>
       <p className="text-sm text-muted">Enter your email and we&apos;ll send you a reset link.</p>
       <FormMessage error={error} success={sent ? "If an account exists for that email, a reset link is on its way." : null} />
       <div>

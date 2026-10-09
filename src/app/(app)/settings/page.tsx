@@ -13,7 +13,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-semibold">Settings</h1>
+      <h1 className="font-display text-3xl font-semibold tracking-[-0.025em]">Settings</h1>
 
       <section className="card space-y-4">
         <div>

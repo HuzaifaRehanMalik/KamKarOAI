@@ -117,7 +117,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Admin panel</h1>
+        <h1 className="font-display text-3xl font-semibold tracking-[-0.025em]">Admin panel</h1>
         <LiveRefresh />
       </div>
 

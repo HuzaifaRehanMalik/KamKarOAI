@@ -2,11 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
-import { runWithUserKey } from "@/lib/keys";
-import { executeWorkflow } from "@/lib/workflow/engine";
+import { inngest, workflowRunRequested } from "@/lib/inngest/client";
 import { graphSchema } from "@/lib/workflow/types";
-
-export const maxDuration = 300;
 
 const bodySchema = z.object({ input: z.string().max(100_000) });
 
@@ -29,24 +26,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     data: { workflowId: id, userId, input: body.data.input },
   });
 
-  let result: Awaited<ReturnType<typeof executeWorkflow>>;
+  // Execution happens in the background (src/lib/inngest/functions.ts); the client polls GET /api/runs/[id].
   try {
-    result = await executeWorkflow(graph.data, body.data.input, (args) => runWithUserKey(userId, args));
+    await inngest.send(workflowRunRequested.create({ runId: run.id }));
   } catch (err) {
-    result = { ok: false, error: err instanceof Error ? err.message : String(err), results: [], tokens: 0 };
+    const failed = await prisma.workflowRun.update({
+      where: { id: run.id },
+      data: { status: "failed", error: "Could not queue run: " + (err instanceof Error ? err.message : String(err)), finishedAt: new Date() },
+    });
+    return NextResponse.json({ run: failed }, { status: 503 });
   }
 
-  const updated = await prisma.workflowRun.update({
-    where: { id: run.id },
-    data: {
-      status: result.ok ? "success" : "failed",
-      output: result.ok ? result.output : null,
-      error: result.ok ? null : result.error,
-      nodeResults: result.results,
-      tokens: result.tokens,
-      finishedAt: new Date(),
-    },
-  });
-
-  return NextResponse.json({ run: updated });
+  return NextResponse.json({ run }, { status: 202 });
 }

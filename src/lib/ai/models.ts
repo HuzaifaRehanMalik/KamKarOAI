@@ -1,5 +1,5 @@
 // Shared between client and server. Users can also type any model id the
-// provider supports — these are just suggestions for the dropdown.
+// provider supports; these are just suggestions for the dropdown.
 export const PROVIDERS = ["openai", "anthropic", "google"] as const;
 export type Provider = (typeof PROVIDERS)[number];
 

@@ -1,14 +1,8 @@
-import Link from "next/link";
+import { Credits } from "./credits";
+import { Logo } from "./logo";
 import { LogoutButton } from "./logout-button";
+import { NavLinks } from "./nav-links";
 import { VerifyEmailBanner } from "./verify-email-banner";
-
-const links = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/workflows", label: "Workflows" },
-  { href: "/runs", label: "Runs" },
-  { href: "/playground", label: "Playground" },
-  { href: "/settings", label: "Settings" },
-];
 
 export function AppShell({
   user,
@@ -20,26 +14,31 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-          <Link href="/dashboard" className="font-bold">KamKarOAI</Link>
-          <nav className="flex flex-wrap gap-4 text-sm">
-            {links.map((l) => (
-              <Link key={l.href} href={l.href} className="text-muted hover:text-foreground">{l.label}</Link>
-            ))}
-            {isAdmin && <Link href="/admin" className="font-medium text-primary">Admin</Link>}
-          </nav>
-          <div className="ml-auto flex items-center gap-4">
-            <span className="hidden text-sm text-muted sm:inline">{user.email}</span>
+    <div className="relative min-h-screen">
+      <div className="bg-grid pointer-events-none absolute inset-x-0 top-0 h-[420px] opacity-60" />
+      <header className="sticky top-0 z-20 border-b border-border bg-background/75 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center gap-8 px-6 lg:px-10">
+          <Logo href="/dashboard" className="shrink-0 py-3" />
+          <NavLinks isAdmin={isAdmin} />
+          <div className="ml-auto flex shrink-0 items-center gap-5">
+            <span className="hidden items-center gap-2 font-mono text-xs text-muted md:flex">
+              <span className="size-1.5 rounded-full bg-success shadow-[0_0_8px_1px_var(--success)]" />
+              {user.email}
+            </span>
             <LogoutButton />
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl space-y-6 px-4 py-8">
+      <main className="relative mx-auto max-w-7xl space-y-8 px-6 py-12 lg:px-10">
         {!user.emailVerified && <VerifyEmailBanner email={user.email} />}
-        <div>{children}</div>
+        <div className="rise">{children}</div>
       </main>
+      <footer className="relative border-t border-border">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-5 lg:px-10">
+          <Credits />
+          <span className="font-mono text-xs text-muted">© {new Date().getFullYear()} KamKarOAI</span>
+        </div>
+      </footer>
     </div>
   );
 }
